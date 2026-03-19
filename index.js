@@ -37,11 +37,18 @@ io.on("connection", (socket) => {
     io.emit("chat:connected", getSpecificPerson(socket.id));
   });
 
-  socket.on("disconnect", (algo) => {
-    console.log("user disconnected en " + getSpecificPerson(socket.id));
+  socket.on("disconnect", () => {
+    console.log("a user disconnected, " + socket.id);
+    let nom = getSpecificPerson(socket.id);
+    if (nom === undefined) {
+      console.log("user disconnected en undefined");
+    } else {
+      io.emit("chat:disconnected", nom);
+      console.log("user disconnected en " + nom);
+    }
+
     userDisconnect(socket);
     sendUsersConnectedList();
-    io.emit("chat:disconnected", getSpecificPerson(socket.id));
   });
 
   socket.on("chat:message", (aquitengoalgodistintoastr) => {
@@ -68,13 +75,16 @@ server.listen(3000, () => {
 });
 
 function getSpecificPerson(socketId) {
-  return listaPersonas[socketId];
+  console.log(usersConectados[socketId]);
+  return usersConectados[socketId];
 }
 function addUser(socket, algo) {
   listaPersonas[socket.id] = algo + "-" + new Date().toLocaleDateString();
   usersConectados[socket.id] = algo;
 }
 function userDisconnect(socket) {
+  listaPersonas[socket.id] +=
+    " - Desconectado el " + new Date().toLocaleDateString();
   delete usersConectados[socket.id];
 }
 function sendUsersConnectedList() {
