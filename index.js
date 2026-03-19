@@ -56,8 +56,11 @@ io.on("connection", (socket) => {
   socket.on("users:list", () => {
     sendUsersConnectedList(socket);
   });
-  socket.on("chat:typing", (algo) => {
-    socket.broadcast.emit("chat:typing", algo);
+  socket.on("chat:typing", (nom) => {
+    socket.broadcast.emit("chat:typing", nom);
+  });
+  socket.on("chat:stopTyping", (nom) => {
+    socket.broadcast.emit("chat:stopTyping", nom);
   });
 });
 server.listen(3000, () => {
