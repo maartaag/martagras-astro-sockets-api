@@ -2,6 +2,7 @@ import express from "express";
 import { createServer, get } from "node:http";
 import { Server } from "socket.io";
 import cors from "cors";
+import { send } from "node:process";
 
 const app = express();
 const server = createServer(app);
@@ -32,23 +33,31 @@ io.on("connection", (socket) => {
   socket.on("connected", (algo) => {
     console.log("a user connected, " + algo);
     addUser(socket, algo);
+    sendUsersConnectedList();
     io.emit("chat:connected", getSpecificPerson(socket.id));
   });
 
   socket.on("disconnect", (algo) => {
     console.log("user disconnected en " + getSpecificPerson(socket.id));
     userDisconnect(socket);
+    sendUsersConnectedList();
     io.emit("chat:disconnected", getSpecificPerson(socket.id));
   });
 
   socket.on("chat:message", (aquitengoalgodistintoastr) => {
+    console.log(
+      "message: " +
+        aquitengoalgodistintoastr.mensaje +
+        " de " +
+        aquitengoalgodistintoastr.nombre,
+    );
     io.emit("chat:message", aquitengoalgodistintoastr);
   });
   socket.on("users:list", () => {
-    io.to(socket.id).emit("users:list", Object.values(listaPersonas));
+    sendUsersConnectedList(socket);
   });
   socket.on("chat:typing", (algo) => {
-    socket.broadcast.emit("chat:typing", getSpecificPerson(socket.id));
+    socket.broadcast.emit("chat:typing", algo);
   });
 });
 server.listen(3000, () => {
@@ -60,8 +69,11 @@ function getSpecificPerson(socketId) {
 }
 function addUser(socket, algo) {
   listaPersonas[socket.id] = algo + "-" + new Date().toLocaleDateString();
-  usersConectados[socket.id] = socket;
+  usersConectados[socket.id] = algo;
 }
 function userDisconnect(socket) {
   delete usersConectados[socket.id];
+}
+function sendUsersConnectedList() {
+  io.emit("users:list", Object.values(usersConectados));
 }
