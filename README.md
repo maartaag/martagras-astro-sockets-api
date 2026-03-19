@@ -21,7 +21,10 @@ Permet:
 
 ## ⚙️ Instruccions per executar el servidor i client
 
-1. Clona el repositori del servidor:
+1. Clona el repositori del servidor i client:
+
+- Servidor: https://github.com/maartaag/martagras-astro-sockets-api.git
+- Client: https://github.com/maartaag/martagras-astro-sockets.git
 
 2. Executa les comandes en la carpeta del servidor on esta src, public,...
 
